@@ -1,0 +1,19 @@
+/*
+1)open - int open(const char *path, int oflag, ...); 
+        przy powodzeniu funkcja otwiera plik i zwraca jego deskryptor,
+        który jest małą liczbą naturalną, przy jego pomocy odwołujemy się do 
+        pliku. W przeciwnym razie funkcja zwraca -1 i ustawia errno aby 
+        wskazać błąd 
+2)read - ssize_t read(int fildes, void *buf, size_t nbyte);
+        funkcja próbuje odczytać nbyte bajtów z pliku okreslonego deskryptorem
+        filedes do bufora wskazywanego przez buf, zwraca liczbę odczytanych
+        bajtów. W przypadku niepowodzenia zwraca -1 i ustawia errno aby wskazać
+        błąd
+3)write - ssize_t write(int fildes, const void *buf, size_t nbyte);
+        funkcja write próbuje zapisać nbyte bajtów z bufora wskazywanego przez
+        buf do pliku określonego deskryptorem filedes, zwraca liczbę faktycznie
+        odczytanych bajtów, w przypadku niepowodzenia -1
+4)close - int close(int fildes);
+        funkcja służy do zwalniania(zamykania) deskryptora, w przypadku powodzenia
+        zwraca 0, wpp zwraca -1
+*/
