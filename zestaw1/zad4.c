@@ -16,22 +16,29 @@ bool drukowalne(const void *buf)
 bool drukowalne_pointers(const void *buf)
 {
     const char *char_buf = buf;
-    int *p = NULL;
-    for (p = char_buf; p < len + char_buf; ++p)
-    {
-        if (*p < 32 && *p > 126)
+    for (int i = 0; i < sizeof(buf); i++)
+    { // wyłuskujemy wartosc spod adresu *(char_buf + i)
+        if (*(char_buf + i) < 32 || *(char_buf + i) > 126)
+        {
             return false;
+        }
     }
-
     return true;
 }
 
 int main()
 {
-    const char *array = {'H', 'e', 'l', 'l', 'o', '\0'};
-    bool result;
-    result = drukowalne(array);
-    printf("%s\n", result ? "true" : "false");
+    //to jest chyba zle, sprawdzic znaczenie String w kontekscie jezyka C
+    const char array_t[] = {'H', 'e', 'l', 'l', 'o', '\0'};
+    const char array_true[] = {33, 34, 35, 46, 63};
+    const char array_false[] = {10, 36, 55, -73};
+
+    printf("%s\n", drukowalne(array_t) ? "true" : "false");
+    printf("%s\n", drukowalne(array_true) ? "true" : "false");
+    printf("%s\n", drukowalne(array_false) ? "true" : "false");
+    printf("%s\n", drukowalne_pointers(array_t) ? "true" : "false");
+    printf("%s\n", drukowalne_pointers(array_true) ? "true" : "false");
+    printf("%s\n", drukowalne_pointers(array_false) ? "true" : "false");
 
     return 0;
 }
