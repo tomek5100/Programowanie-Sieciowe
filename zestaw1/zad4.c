@@ -18,7 +18,6 @@ bool drukowalne_pointers(const void *buf)
     const char *char_buf = buf;
     int *p = NULL;
     for (p = char_buf; p < len + char_buf; ++p)
-    
     {
         if (*p < 32 && *p > 126)
             return false;
