@@ -8,7 +8,7 @@
 int main()
 {
     int filedes1;
-    if ((filedes1 = open("tekst.txt", O_RDONLY, 444)) == -1)
+    if ((filedes1 = open("tekst.txt", O_RDONLY, 0644)) == -1)
     {
         perror("Open1 error\n");
         exit(EXIT_FAILURE);
@@ -39,7 +39,7 @@ int main()
             perror("Write on screen error\n");
             exit(EXIT_FAILURE);
         }
-        memset(bufor, 0, size); // czyscimy bufor
+        memset(bufor, '\0', size); // czyscimy bufor
     }
     if (readed == -1)
     {
