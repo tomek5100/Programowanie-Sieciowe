@@ -60,17 +60,18 @@ int main(int argc, char const *argv[])
         /*
         accept() obsługuje pierwsze połączenie w kolejce, tworzy nowe gniazdo i zwraca jego deskryptor
         */
-        if ((new_socket = accept(server_fd, NULL, NULL) == -1)
+        if ((new_socket = accept(server_fd, NULL, NULL) == -1))
         {
             perror("accept");
             exit(EXIT_FAILURE);
         }
         write(new_socket, hello, strlen(hello));
 
-        if (close(new_socket) == -1) {
+        if (close(new_socket) == -1)
+        {
             perror("close");
             exit(EXIT_FAILURE);
-		}
+        }
     }
 
     return 0;
