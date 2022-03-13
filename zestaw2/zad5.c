@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char *hello = "Hello from server\n";
+    char *hello = "Hello, world!\r\n";
 
     while (1)
     {
@@ -66,6 +66,7 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         }
         write(new_socket, hello, strlen(hello));
+        printf("Hello message sent\n");
 
         if (close(new_socket) == -1)
         {
