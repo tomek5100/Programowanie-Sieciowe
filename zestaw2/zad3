@@ -1,0 +1,13 @@
+a) -v
+    określa szczegółowe dane wyjściowe
+    
+b) -l
+    nasłuchuje połączenia przychodzącego, zamiast inicjować połącznie ze
+    zdalnym hostem
+
+c) -u
+    używa UDP zamiast domyślnego gniazdka TCP
+
+d) -c
+
+e) --crlf
