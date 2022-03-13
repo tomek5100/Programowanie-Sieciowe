@@ -1,0 +1,10 @@
+1. Sprawdź co się dzieje, jeśli spróbujesz uruchomić klienta 
+(netcat bez opcji -l) jako pierwszego:
+    Ncat: Connection refused. - odrzuca połączenie
+
+2. Sprawdź, w jaki sposób netcat-klient oraz netcat-serwer reagują, 
+gdy proces na drugim końcu połączenia zostanie zabity przez Ctrl-C:
+    a) Gdy zamykamy klienta: 
+        Serwer przerywa również swoje działanie
+    b) Gdy zamykamy serwer:
+        Klient nadal czeka na możliwość wysłania
