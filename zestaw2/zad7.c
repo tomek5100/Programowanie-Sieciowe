@@ -18,8 +18,13 @@ int main(int argc, char const *argv[])
 
     int client_fd;
     struct sockaddr_in server_addr;
-    char message[64];
 
+    // Set port and IP the same as server-side:
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = htons(IPv4);
+
+    char message[64];
     // Clean buffers:
     memset(message, '\0', sizeof(message));
 
@@ -30,11 +35,6 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // Set port and IP the same as server-side:
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = htons(IPv4);
-
     // Send connection request to server:
     if (connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
     {
@@ -43,7 +43,7 @@ int main(int argc, char const *argv[])
     }
 
     // Receive the server's response:
-    if (recv(client_fd, message, sizeof(message), 0) < 0)
+    if (recv(client_fd, message, sizeof(message), 0) == -1)
     {
         perror("recv failed");
         exit(EXIT_FAILURE);
