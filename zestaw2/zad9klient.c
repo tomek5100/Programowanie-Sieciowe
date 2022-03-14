@@ -64,8 +64,7 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    //-2 znaki bo \n\r nie są drukowalne
-    if (drukowalne(message, readed - 2))
+    if (drukowalne(message, readed))
     {
         printf("%s\n", message);
     }
