@@ -24,7 +24,8 @@ int main(int argc, char const *argv[])
 
     /*
     AF_INET - obsługa protokołu IPv4
-    SOCK_STREM - zapewnia niezawodny, dwuekierunkowy strumień bajtowy
+    SOCK_STREM - odnosi się do protokołu TCP, połączenie jest nawiązywane i obie strony prowadzą
+                rozmowę dopóki połączenie nie zostanie przerwane przez jedną ze stron
     */
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {

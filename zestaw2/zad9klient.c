@@ -38,33 +38,35 @@ int main(int argc, char const *argv[])
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = inet_addr(IPv4);
 
-    char message[64];
-    // Clean buffers:
-    memset(message, '\0', sizeof(message));
-
     // Create socket:
-    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((client_fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
 
-    // Send connection request to server:
-    if (connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+    // wysyłamy pusty datagram
+    if (sendto(client_fd, "", 0, 0, (struct sockaddr *)&server_addr, sizeof(struct sockaddr_in)) == -1)
     {
-        perror("connect failed");
+        perror("sendto failed");
         exit(EXIT_FAILURE);
     }
+
+    char message[64];
+    // Clean buffers:
+    memset(message, '\0', sizeof(message));
+
+    socklen_t adresRozmiar = sizeof(server_addr);
 
     // Read the server's message:
     int readed;
-    if ((readed = read(client_fd, &message, sizeof(message))) == -1)
+    if ((readed = recvfrom(client_fd, message, 32, 0, (struct sockaddr *)&server_addr, &adresRozmiar)) == -1)
     {
-        perror("read failed");
+        perror("recvfrom failed");
         exit(EXIT_FAILURE);
     }
 
-    if (drukowalne(message, readed))
+    if (drukowalne(message, readed - 2))
     {
         printf("%s\n", message);
     }
