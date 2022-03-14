@@ -4,6 +4,20 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <stdbool.h>
+#include <arpa/inet.h>
+
+bool drukowalne(const void *buf, int len)
+{
+    const char *buffer = buf;
+
+    for (int i = 0; i < len; i++)
+    {
+        if (buffer[i] < 32 || buffer[i] > 126)
+            return false;
+    }
+    return true;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -13,7 +27,7 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    int IPv4 = atoi(argv[1]);
+    const char *IPv4 = argv[1];
     int PORT = atoi(argv[2]);
 
     int client_fd;
@@ -22,7 +36,7 @@ int main(int argc, char const *argv[])
     // Set port and IP the same as server-side:
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = htons(IPv4);
+    server_addr.sin_addr.s_addr = inet_addr(IPv4);
 
     char message[64];
     // Clean buffers:
@@ -42,19 +56,24 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // Receive the server's response:
-    if (recv(client_fd, message, sizeof(message), 0) == -1)
+    // Read the server's message:
+    int readed;
+    if ((readed = read(client_fd, &message, sizeof(message))) == -1)
     {
-        perror("recv failed");
+        perror("read failed");
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < sizeof(message); i++)
-    {
-        putchar(message[i]);
-    }
-    printf("\n");
 
-    // Close the socket:
+    if (drukowalne(message, readed))
+    {
+        printf("%s\n", message);
+    }
+    else
+    {
+        printf("Odebrano niedrukowalne znaki\n");
+        exit(EXIT_FAILURE);
+    }
+
     if (close(client_fd) == -1)
     {
         perror("close");
