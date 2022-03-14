@@ -20,13 +20,14 @@ int main(int argc, char const *argv[])
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(PORT);
 
-    int server_fd, new_socket;
+    int server_fd;
 
     /*
     AF_INET - obsługa protokołu IPv4
-    SOCK_STREM - zapewnia niezawodny, dwuekierunkowy strumień bajtowy
+    SOCK_DGRAM -  odnosi się do protokołu UDP (opartym an datagramach), wysyłamy jeden datagram
+                otrzymuję odpowiedź, a następnie połączenie zostaje zakończone
     */
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((server_fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
         perror("socket failed");
         exit(EXIT_FAILURE);
@@ -42,37 +43,32 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    /*
-    listen() określa, że gniazdo będzie używane do przyjmowania przychodzących połączeń za pomocą
-    funkcji accept()
-    drugi argument określa maksymalną długość, do któej kolejka oczekujących połączeń może wzrosnąć
-    */
-    if (listen(server_fd, 3) == -1)
-    {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
-
-    char *hello = "Hello, world!\r\n";
+    char *hello = "Hello world\n";
 
     while (1)
     {
-        /*
-        accept() obsługuje pierwsze połączenie w kolejce, tworzy nowe gniazdo i zwraca jego deskryptor
-        */
-        if ((new_socket = accept(server_fd, NULL, NULL) == -1))
-        {
-            perror("accept");
-            exit(EXIT_FAILURE);
-        }
-        write(new_socket, hello, strlen(hello));
-        printf("Hello message sent\n");
+        struct sockaddr_in klient;
+        socklen_t klientRozmiar = sizeof(klient);
 
-        if (close(new_socket) == -1)
+        //odbieramy pusty datagram od klienta
+        if (recvfrom(server_fd, NULL, 0, 0, (struct sockaddr *)&klient, &klientRozmiar) == -1)
         {
-            perror("close");
+            perror("recvfrom() failed");
             exit(EXIT_FAILURE);
         }
+
+        //wysyłamy dane do klienta
+        if (sendto(server_fd, hello, sizeof(hello), 0, (struct sockaddr *)&klient, klientRozmiar) == -1)
+        {
+            perror("sendto() failed");
+            exit(EXIT_FAILURE);
+        }
+    }
+    
+    if (close(server_fd) == -1)
+    {
+        perror("close");
+        exit(EXIT_FAILURE);
     }
 
     return 0;
