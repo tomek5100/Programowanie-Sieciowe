@@ -28,16 +28,13 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    const char *IPv4 = argv[1];
-    int PORT = atoi(argv[2]);
-
     int client_fd;
     struct sockaddr_in server_addr;
 
     // Set port and IP the same as server-side:
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = inet_addr(IPv4);
+    server_addr.sin_port = htons(atoi(argv[2]));
+    server_addr.sin_addr.s_addr = inet_addr(argv[1]);
 
     char message[64];
     // Clean buffers:
