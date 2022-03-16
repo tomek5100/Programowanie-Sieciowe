@@ -13,12 +13,10 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    int PORT = atoi(argv[1]);
-
     struct sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(atoi(argv[1]));
 
     int server_fd;
 
@@ -47,24 +45,24 @@ int main(int argc, char const *argv[])
 
     while (1)
     {
-        struct sockaddr_in klient;
+        struct sockaddr_in klient = {};
         socklen_t klientRozmiar = sizeof(klient);
 
-        //odbieramy pusty datagram od klienta
+        // odbieramy pusty datagram od klienta
         if (recvfrom(server_fd, NULL, 0, 0, (struct sockaddr *)&klient, &klientRozmiar) == -1)
         {
             perror("recvfrom() failed");
             exit(EXIT_FAILURE);
         }
 
-        //wysyłamy dane do klienta
+        // wysyłamy dane do klienta
         if (sendto(server_fd, hello, sizeof(hello), 0, (struct sockaddr *)&klient, klientRozmiar) == -1)
         {
             perror("sendto() failed");
             exit(EXIT_FAILURE);
         }
     }
-    
+
     if (close(server_fd) == -1)
     {
         perror("close");
