@@ -41,7 +41,9 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char *hello = "Hello world\n";
+    // tutaj ważne żeby lepiej nie używać char *hello bo to oznacza, że tworzymy wskaźnik na jakąś komórkę w pamięci,
+    // jeśli wiemy że jest tam char to możemy jego dlugość sprawdzić strlen(), jeśli nie to mamy problem
+    char hello[] = "Hello world\n";
 
     while (1)
     {

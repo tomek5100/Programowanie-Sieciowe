@@ -1,4 +1,4 @@
-//serwer
+// serwer
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -54,7 +54,9 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char *hello = "Hello, world!\r\n";
+    // tutaj ważne żeby lepiej nie używać char *hello bo to oznacza, że tworzymy wskaźnik na jakąś komórkę w pamięci,
+    // jeśli wiemy że jest tam char to możemy jego dlugość sprawdzić strlen(), jeśli nie to mamy problem
+    char hello[] = "Hello, world!\r\n";
 
     while (1)
     {

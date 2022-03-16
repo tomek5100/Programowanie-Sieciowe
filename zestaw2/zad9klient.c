@@ -65,6 +65,7 @@ int main(int argc, char const *argv[])
 
     if (drukowalne(message, readed))
     {
+        //Błąd!! Zagwarantować że ta tablica jest stringiem w znaczeniu jezyka C, tzn dodać znak \0 na koniec tablicy!
         printf("%s\n", message);
     }
     else
