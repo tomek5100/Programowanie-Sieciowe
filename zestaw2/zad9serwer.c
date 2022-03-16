@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
 
     while (1)
     {
-        struct sockaddr_in klient = {};
+        struct sockaddr_in klient;
         socklen_t klientRozmiar = sizeof(klient);
 
         // odbieramy pusty datagram od klienta
