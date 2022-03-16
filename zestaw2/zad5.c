@@ -1,9 +1,11 @@
+//serwer
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <sys/types.h>
 
 int main(int argc, char const *argv[])
 {
@@ -13,12 +15,10 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    int PORT = atoi(argv[1]);
-
     struct sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(atoi(argv[1]));
 
     int server_fd, new_socket;
 
