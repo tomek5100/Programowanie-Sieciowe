@@ -63,6 +63,7 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
+    //błąd funkcji drukowalne, jeśli ją poprawię to program powinien być git
     if (drukowalne(message, readed))
     {
         //Błąd!! Zagwarantować że ta tablica jest stringiem w znaczeniu jezyka C, tzn dodać znak \0 na koniec tablicy!
