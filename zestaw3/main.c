@@ -29,14 +29,12 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    char bufor[datagram_size + 1];
-    char odpowiedz[datagram_size];
-    unsigned int suma = 0;
-    int przekonwertowana;
-    char odczytana[1];
-
     while (1)
     {
+        char bufor[datagram_size + 1];
+        memset(bufor, 0, sizeof(bufor));
+        char odpowiedz[datagram_size];
+        memset(odpowiedz, 0, sizeof(odpowiedz));
         struct sockaddr_in klient;
         socklen_t klientRozmiar = sizeof(klient);
 
@@ -46,25 +44,30 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         }
 
-        for (int i = 0; i < datagram_size; i++)
+        printf("odczytano: %s", bufor);
+
+        unsigned int suma = 0;
+        char odczytana[10];
+        int i = 0;
+        const char *bufor_pom = bufor;
+
+        while (*bufor_pom != 0)
         {
-
-            if (bufor[i] >= '0' && bufor[i] <= '9') // nie trafiliśmy na spacje ani znak końca linii
+            if (*bufor_pom == ' ')
             {
-                odczytana[0] = bufor[i] - '0';
-                przekonwertowana = atoi(odczytana);
-                suma += przekonwertowana;
+                suma += atoi(odczytana);
+                memset(odczytana, 0, sizeof(odczytana));
+                i = 0;
             }
-            // możemy napotkać: spacje, \n, lub \r\n
-            else if (bufor[i] == ' ' || bufor[i] == '\n' || (bufor[i] == '\r' && bufor[i + 1] == '\n'))
-            {
-            }
+            odczytana[i] = *bufor_pom;
+            i++;
+            bufor_pom++;
         }
+        suma += atoi(odczytana);
+        memset(odczytana, 0, sizeof(odczytana));
 
-        //konwertujemy sume na string
         int dlugosc_odpowiedzi = sprintf(odpowiedz, "%d\n", suma);
 
-        // wysyłamy dane do klienta
         if (sendto(server_fd, odpowiedz, dlugosc_odpowiedzi, 0, (struct sockaddr *)&klient, klientRozmiar) == -1)
         {
             perror("sendto() failed");
