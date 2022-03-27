@@ -93,7 +93,7 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            printf("odczytano: %s", bufor);
+            printf("odczytano: %s\n", bufor);
 
             while (*bufor_pom != 0)
             {
@@ -110,21 +110,23 @@ int main(int argc, char const *argv[])
                     i = 0;
                 }
                 odczytana[i] = *bufor_pom;
-                // printf("odczytana: %c\n", odczytana[i]);
-                // printf("tutaj\n");
                 i++;
                 bufor_pom++;
             }
 
             long cast = strtol(odczytana, 0, 10);
-            if((cast == LONG_MAX) || (cast == LONG_MIN)){
+            if ((cast == LONG_MAX) || (cast == LONG_MIN))
+            {
                 printf("Przekroczono zakres long podczas konwersji\n");
                 overload = true;
             }
 
-            // printf("strtol %ld\n", cast);
-
-            if (suma > INT_MAX - cast)
+            /*
+            de facto drugi warunek lepiej sprawdza overflow
+            bo odejmuje max zakres inta od przekonwertowanej liczby
+            natomiast funkcja atoi(odczytana) moze zwrocic bledny wynik
+            */
+            if ((suma > INT_MAX - atoi(odczytana)) || (cast - INT_MAX > 0))
             {
                 printf("OVERLOAD\n");
                 overload = true;
