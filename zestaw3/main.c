@@ -93,7 +93,7 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            printf("odczytano: %s\n", bufor);
+            printf("odczytano: %s", bufor);
 
             while (*bufor_pom != 0)
             {
@@ -110,8 +110,8 @@ int main(int argc, char const *argv[])
                     i = 0;
                 }
                 odczytana[i] = *bufor_pom;
-                printf("odczytana: %c\n", odczytana[i]);
-                printf("tutaj\n");
+                // printf("odczytana: %c\n", odczytana[i]);
+                // printf("tutaj\n");
                 i++;
                 bufor_pom++;
             }
