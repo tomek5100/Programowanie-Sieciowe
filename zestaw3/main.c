@@ -58,7 +58,7 @@ int main(int argc, char const *argv[])
 
     while (1)
     {
-        bool overload = false;
+        bool overflow = false;
         bool not_number = false;
         bool is_empty = false;
         int recvfrom_size = 0;
@@ -118,7 +118,7 @@ int main(int argc, char const *argv[])
             if ((cast == LONG_MAX) || (cast == LONG_MIN))
             {
                 printf("Przekroczono zakres long podczas konwersji\n");
-                overload = true;
+                overflow = true;
             }
 
             /*
@@ -128,8 +128,8 @@ int main(int argc, char const *argv[])
             */
             if ((suma > INT_MAX - atoi(odczytana)) || (cast - INT_MAX > 0))
             {
-                printf("OVERLOAD\n");
-                overload = true;
+                printf("OVERFLOW\n");
+                overflow = true;
             }
             suma += atoi(odczytana);
             memset(odczytana, 0, sizeof(odczytana));
@@ -137,7 +137,7 @@ int main(int argc, char const *argv[])
 
         int dlugosc_odpowiedzi = 0;
 
-        if ((overload == true) || (not_number == true) || (is_empty == true))
+        if ((overflow == true) || (not_number == true) || (is_empty == true))
         {
             dlugosc_odpowiedzi = sprintf(odpowiedz, "ERROR");
         }
