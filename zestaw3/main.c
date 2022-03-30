@@ -80,7 +80,6 @@ int main(int argc, char const *argv[])
         unsigned int suma = 0;
         char odczytana[20];
         memset(odczytana, 0, sizeof(odczytana));
-        int i = 0;
         const char *bufor_pom = bufor;
 
         if (recvfrom_size == 0)
@@ -96,10 +95,10 @@ int main(int argc, char const *argv[])
         else
         {
             printf("odczytano: %s\n", bufor);
-
-            while (*bufor_pom != 0)
+            int i = 0;
+            do
             {
-                if (*bufor_pom == '\0')
+                if (bufor_pom[i] == '\0')
                 {
                     printf("Odczytano bajt o wartosci 0\n");
                     zero_byte = true;
@@ -118,7 +117,7 @@ int main(int argc, char const *argv[])
                 odczytana[i] = *bufor_pom;
                 i++;
                 bufor_pom++;
-            }
+            } while (*bufor_pom != 0);
 
             long cast = strtol(odczytana, 0, 10);
             if ((cast == LONG_MAX) || (cast == LONG_MIN))
