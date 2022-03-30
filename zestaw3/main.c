@@ -10,20 +10,18 @@
 
 int datagram_size = 65507; // for IPv4
 
-bool drukowalne(const char *buf)
+bool drukowalne(const char *buf, int size)
 {
-    int iter = 0;
-    while (1)
+    // zmienna do przechowywania liczby cyfr
+    int number = 0;
+
+    // pętla przez cały bufor
+    for (int i = 0; i < size; i++)
     {
-        if (*buf == 0)
-        {
-            if (iter > 0) // zabezpieczenie przed datagramem posiadajacym np. same spacje
-                return true;
-            else
-                return false;
-        }
+        // jeśli nie cyfra
         if (*buf < 48 || *buf > 57)
         {
+            // jeśli spacja, \n lub \r
             if (*(buf) == 13 || *buf == 10 || *buf == 32)
             {
                 buf++;
@@ -31,9 +29,17 @@ bool drukowalne(const char *buf)
             }
             return false;
         }
-        iter++;
         buf++;
+        number++;
     }
+
+    // jesli nie pojawiła się liczba to znaczy że same spacje
+    if (number == 0)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 int main(int argc, char const *argv[])
@@ -80,6 +86,7 @@ int main(int argc, char const *argv[])
         unsigned int suma = 0;
         char odczytana[20];
         memset(odczytana, 0, sizeof(odczytana));
+        int i = 0;
         const char *bufor_pom = bufor;
 
         if (recvfrom_size == 0)
@@ -87,7 +94,7 @@ int main(int argc, char const *argv[])
             printf("Otrzymany datagram jest pusty\n");
             is_empty = true;
         }
-        else if (drukowalne(bufor) == false)
+        else if (drukowalne(bufor, recvfrom_size) == false)
         {
             printf("Otrzymane znaki nie sa cyframi\n");
             not_number = true;
@@ -95,10 +102,10 @@ int main(int argc, char const *argv[])
         else
         {
             printf("odczytano: %s\n", bufor);
-            int i = 0;
+
             do
             {
-                if (bufor_pom[i] == '\0')
+                if (*bufor_pom == '\0')
                 {
                     printf("Odczytano bajt o wartosci 0\n");
                     zero_byte = true;
