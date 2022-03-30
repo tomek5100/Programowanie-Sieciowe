@@ -62,6 +62,7 @@ int main(int argc, char const *argv[])
         bool overflow = false;
         bool not_number = false;
         bool is_empty = false;
+        bool zero_byte = false;
         int recvfrom_size = 0;
         char bufor[datagram_size + 1];
         memset(bufor, 0, sizeof(bufor));
@@ -98,7 +99,11 @@ int main(int argc, char const *argv[])
 
             while (*bufor_pom != 0)
             {
-
+                if (*bufor_pom == '\0')
+                {
+                    printf("Odczytano bajt o wartosci 0\n");
+                    zero_byte = true;
+                }
                 if (*bufor_pom == 13 || *bufor_pom == 10)
                 {
                     bufor_pom++;
@@ -138,13 +143,13 @@ int main(int argc, char const *argv[])
 
         int dlugosc_odpowiedzi = 0;
 
-        if ((overflow == true) || (not_number == true) || (is_empty == true))
+        if ((overflow == true) || (not_number == true) || (is_empty == true) || (zero_byte == true))
         {
             dlugosc_odpowiedzi = sprintf(odpowiedz, "ERROR");
         }
         else
         {
-            dlugosc_odpowiedzi = sprintf(odpowiedz, "%d\n", suma);
+            dlugosc_odpowiedzi = sprintf(odpowiedz, "%d", suma);
         }
 
         if (sendto(server_fd, odpowiedz, dlugosc_odpowiedzi, 0, (struct sockaddr *)&klient, klientRozmiar) == -1)
