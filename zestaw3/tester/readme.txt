@@ -9,7 +9,7 @@ znak i automatycznie odsyła komunikat. Po po
 uruchomieniu najpierw netcat'a a dopiero później
 serwera problem nie występuje i komunikacja odbywa
 się bez problemu.
-Po usunięciu flagi -v, problem nie występuje.
+Po usunięciu flagi -v, problem nie występuje. 
 
 Serwer będzie nasłuchiwał klientów do momentu przerwania
 jego działania za pomocą sygnału wysyłanego "CTRL+C".

@@ -10,7 +10,7 @@
 
 int datagram_size = 65507; // for IPv4
 
-bool drukowalne(const char *buf, int size)
+bool drukowalne(const char *buf, int size) 
 {
     // zmienna do przechowywania liczby cyfr
     int number = 0;
