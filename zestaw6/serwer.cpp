@@ -160,11 +160,11 @@ void sumator(int client_socket)
 
                         if ((overflow == true) || (not_number == true) || (is_empty == true) || (zero_byte == true) || (end_line_err == true))
                         {
-                            dlugosc_odpowiedzi = sprintf(odpowiedz, "ERROR");
+                            dlugosc_odpowiedzi = sprintf(odpowiedz, "ERROR\r\n");
                         }
                         else
                         {
-                            dlugosc_odpowiedzi = sprintf(odpowiedz, "%d", suma);
+                            dlugosc_odpowiedzi = sprintf(odpowiedz, "%d\r\n", suma);
                         }
 
                         if (write(client_socket, odpowiedz, dlugosc_odpowiedzi) == -1)
