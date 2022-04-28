@@ -37,6 +37,11 @@ bool drukowalne(const char *buf, int size)
             if (*(buf) == 13 || *buf == 10 || *buf == 32)
             {
                 buf++;
+                if ((*buf) == 32)
+                {
+                    // dwie spacje obok siebie
+                    return false;
+                }
                 continue;
             }
             return false;
@@ -112,7 +117,7 @@ void sumator(int client_socket)
             break;
         }
 
-        unsigned int suma = 0;
+        int suma = 0;
         char odczytana[22];
         memset(odczytana, 0, sizeof(odczytana));
         int i = 0;
@@ -120,19 +125,44 @@ void sumator(int client_socket)
 
         if (bytes_read == 0)
         {
-            printf("Otrzymany pakiet jest pusty\n");
             is_empty = true;
+            break;
         }
         else if (drukowalne(bufor, bytes_read) == false)
         {
             printf("Otrzymane znaki nie sa cyframi\n");
             not_number = true;
         }
-        else
+        
+        if (bytes_read > 0)
         {
             printf("odczytano: %s\n", bufor);
             do
             {
+                if ((*bufor_pom == ' ') || (*bufor_pom == 10))
+                {
+                    long cast = strtol(odczytana, 0, 10);
+                    if ((cast == LONG_MAX) || (cast == LONG_MIN))
+                    {
+                        printf("Przekroczono zakres long podczas konwersji\n");
+                        overflow = true;
+                    }
+
+                    /*
+                    de facto drugi warunek lepiej sprawdza overflow
+                    bo odejmuje max zakres inta od przekonwertowanej liczby
+                    natomiast funkcja atoi(odczytana) moze zwrocic bledny wynik
+                    */
+                    if ((suma > (INT_MAX - atoi(odczytana))) || (cast - INT_MAX > 0))
+                    {
+                        printf("OVERFLOW\n");
+                        overflow = true;
+                    }
+                    suma += atoi(odczytana);
+                    memset(odczytana, 0, sizeof(odczytana));
+                    i = 0;
+                }
+
                 if (*bufor_pom == '\0')
                 {
                     printf("Odczytano bajt o wartosci 0\n");
@@ -181,37 +211,10 @@ void sumator(int client_socket)
                 // kolejnym znakiem nie bylo \n wiec nie byl to koniec zapytania
                 end_query = false;
 
-                if (*bufor_pom == ' ')
-                {
-
-                    suma += atoi(odczytana);
-                    memset(odczytana, 0, sizeof(odczytana));
-                    i = 0;
-                }
                 odczytana[i] = *bufor_pom;
                 i++;
                 bufor_pom++;
             } while (*bufor_pom != 0);
-
-            long cast = strtol(odczytana, 0, 10);
-            if ((cast == LONG_MAX) || (cast == LONG_MIN))
-            {
-                printf("Przekroczono zakres long podczas konwersji\n");
-                overflow = true;
-            }
-
-            /*
-            de facto drugi warunek lepiej sprawdza overflow
-            bo odejmuje max zakres inta od przekonwertowanej liczby
-            natomiast funkcja atoi(odczytana) moze zwrocic bledny wynik
-            */
-            if ((suma > (INT_MAX - atoi(odczytana))) || (cast - INT_MAX > 0))
-            {
-                printf("OVERFLOW\n");
-                overflow = true;
-            }
-            suma += atoi(odczytana);
-            memset(odczytana, 0, sizeof(odczytana));
         }
     }
 }

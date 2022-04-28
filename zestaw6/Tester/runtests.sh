@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # define max possible number in your program
-max=4294967295				# for uint from limits.h
-#max=2147483647				# for int from limits.h
+#max=4294967295				# for uint from limits.h
+max=2147483647				# for int from limits.h
 #max=9223372036854775807	# for long from limits.h
 #max=18446744073709551615	# for ulong from limits.h
 
