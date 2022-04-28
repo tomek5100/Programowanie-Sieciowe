@@ -133,12 +133,17 @@ void sumator(int client_socket)
             printf("Otrzymane znaki nie sa cyframi\n");
             not_number = true;
         }
-        
+
         if (bytes_read > 0)
         {
             printf("odczytano: %s\n", bufor);
             do
             {
+                if ((*bufor_pom == 32) && i == 0)
+                {
+                    // pierwszy znak to spacja
+                    not_number = true;
+                }
                 if ((*bufor_pom == ' ') || (*bufor_pom == 10))
                 {
                     long cast = strtol(odczytana, 0, 10);
@@ -187,7 +192,7 @@ void sumator(int client_socket)
                     {
                         // tu wysylamy odpowiedz
                         int dlugosc_odpowiedzi = 0;
-
+                        
                         if ((overflow == true) || (not_number == true) || (is_empty == true) || (zero_byte == true) || (end_line_err == true))
                         {
                             dlugosc_odpowiedzi = sprintf(odpowiedz, "ERROR\r\n");
