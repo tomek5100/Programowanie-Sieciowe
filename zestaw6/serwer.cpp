@@ -130,13 +130,13 @@ void sumator(int client_socket)
         }
         else if (drukowalne(bufor, bytes_read) == false)
         {
-            printf("Otrzymane znaki nie sa cyframi\n");
+            //printf("Otrzymane znaki nie sa cyframi\n");
             not_number = true;
         }
 
         if (bytes_read > 0)
         {
-            printf("odczytano: %s\n", bufor);
+            //printf("odczytano: %s\n", bufor);
             do
             {
                 if ((*bufor_pom == 32) && i == 0)
@@ -149,7 +149,7 @@ void sumator(int client_socket)
                     long cast = strtol(odczytana, 0, 10);
                     if ((cast == LONG_MAX) || (cast == LONG_MIN))
                     {
-                        printf("Przekroczono zakres long podczas konwersji\n");
+                        //printf("Przekroczono zakres long podczas konwersji\n");
                         overflow = true;
                     }
 
@@ -160,7 +160,7 @@ void sumator(int client_socket)
                     */
                     if ((suma > (INT_MAX - atoi(odczytana))) || (cast - INT_MAX > 0))
                     {
-                        printf("OVERFLOW\n");
+                        //printf("OVERFLOW\n");
                         overflow = true;
                     }
                     suma += atoi(odczytana);
@@ -170,7 +170,7 @@ void sumator(int client_socket)
 
                 if (*bufor_pom == '\0')
                 {
-                    printf("Odczytano bajt o wartosci 0\n");
+                    //printf("Odczytano bajt o wartosci 0\n");
                     zero_byte = true;
                 }
                 if (*bufor_pom == 13)
@@ -253,7 +253,7 @@ void forking_loop(int server_des)
                 perror("Inet_ntop error");
                 strcpy(connection_info, "???");
             }
-            std::cout << "Nowe połączenie " << connection_info << ":" << (unsigned int)ntohs(ClientAddress.sin_port) << std::endl;
+            //std::cout << "Nowe połączenie " << connection_info << ":" << (unsigned int)ntohs(ClientAddress.sin_port) << std::endl;
         }
 
         // ustawianie timeoutu serwera
