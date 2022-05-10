@@ -1,0 +1,54 @@
+Zajęcia nr 5, 2022-03-30 i -31
+Wyniki testów przesłanych mi sumatorów UDP można znaleźć na spk-ssh.if.uj.edu.pl w katalogu /home/palacz/PS/.
+
+Od protokołów przesyłających dane w datagramach przechodzimy do protokołów korzystających z transportu strumieniowego. Dalej będziemy rozważać sumowanie liczb, ale teraz zapytania i odpowiedzi będą przesyłane za pomocą TCP.
+
+Zadania (głównie praca koncepcyjna):
+
+Napisz specyfikację strumieniowego protokołu sumowania liczb. Dopuść możliwość przesyłania przez jedno połączenie wielu ciągów liczb do zsumowania i wielu odpowiedzi (obliczonych sum albo komunikatów o wystąpieniu błędu). Zastanów się, czego użyć jako terminatora mówiącego „w tym miejscu kończy się ciąg liczb” — dwuznaku \r\n, tak jak w wielu innych protokołach sieciowych? A może czegoś innego (ale wtedy miej jakieś uzasadnienie odejścia od powszechnie przyjętej konwencji)? Czy odpowiedzi serwera będą używać takiego samego terminatora?
+
+Rozważ, czy trzeba do specyfikacji dodawać warunek ograniczający długość przesyłanych przez klienta zapytań, np. 1024 bajty łącznie z terminatorem. To ułatwiłoby implementowanie serwera, bo dzięki temu programista piszący serwer mógłby zadeklarować roboczy bufor o rozmiarze 1024 bajtów i to na pewno wystarczyłoby, aby wczytać do niego całe zapytanie. Ale czy to jest niezbędne? Czy problem dodawania liczb wymaga, aby serwer odebrał całe zapytanie, zanim zacznie je przetwarzać?
+
+Zastanów się nad algorytmem serwera. Będzie on musiał być bardziej złożony niż w przypadku serwera UDP. Tam pojedyncza operacja odczytu zawsze zwracała jeden kompletny datagram, czyli jeden kompletny ciąg liczb do zsumowania. W przypadku połączeń TCP niestety tak łatwo nie jest.
+
+Po pierwsze, jeśli klient od razu po nawiązaniu połączenia wysłał kilka zapytań jedno za drugim, to serwer może je odebrać sklejone ze sobą. Pojedyncza operacja odczytu ze strumienia może np. zwrócić 15 bajtów odpowiadających znakom 2 2\r\n10 22 34\r\n — jak widać są to dwa ciągi liczb. Serwer w odpowiedzi powinien zwrócić 4\r\n66\r\n.
+
+Po drugie, operacja odczytu może zwrócić tylko początkową część zapytania. Kod serwera musi wtedy ponownie wywołać read(). Takie ponawianie odczytów i odbieranie kolejnych fragmentów ciągu liczb musi trwać aż do chwili odebrania \r\n — dopiero wtedy wiemy, że dotarliśmy do końca zapytania.
+
+Po trzecie, mogą się zdarzyć oba powyższe przypadki równocześnie. Serwer może np. odczytać ze strumienia 9 bajtów odpowiadających znakom 2 2\r\n10 2.
+
+Spróbuj rozpisać w formie pseudokodu algorytm serwera obsługujący powyższe komplikacje i starannie przeanalizuj, czy na pewno poradzi on sobie nawet przy założeniu maksymalnie złej woli ze strony klienta.
+
+Polecam Państwa uwadze przedstawioną na wykładzie koncepcję automatu przetwarzającego kolejne bajty z wejścia. Automat nie potrzebuje bufora z kompletnym ciągiem liczb, po prostu konsumuje bajty w miarę tego jak nadchodzą, więc będzie w stanie przetwarzać dowolnie długie zapytania. Użycie automatu powinno wielce ułatwić zaprojektowanie poprawnie działającego algorytmu.
+
+(nieobowiązkowe) Jeśli chcesz, możesz już teraz zaimplementować taki algorytm w C++, Pythonie lub Javie. Zdobyte doświadczenie i napisany kod przydadzą się na następnych zajęciach.
+
+Zajęcia nr 6, 2022-04-06 i -07
+Dziś zaczynamy prace nad serwerem potrafiącym obsługiwać wielu klientów TCP równocześnie. Na wykładzie omówione zostały ogólne zasady pisania takich serwerów, patrz przykłady rot13_server.c oraz rot13_server.py. Pierwszy z nich demonstruje kilka uniksowych mechanizmów, które można wykorzystać do równoległej obsługi klientów, drugi pokazuje jak zaimplementować w obiektowym stylu serwer sterowany zdarzeniami (użytym językiem jest Python, ale dałoby się coś bardzo podobnego napisać w C++ używając funkcji epoll).
+
+Zadania:
+
+Przeanalizuj następującą specyfikację strumieniowego protokołu sumowania liczb, obowiązującą we wszystkich moich grupach ćwiczeniowych:
+
+Komunikacja pomiędzy klientem a serwerem odbywa się przy pomocy połączenia strumieniowego. Klient wysyła jedną lub więcej linii zawierających liczby. Dla każdej odebranej linii serwer zwraca linię zawierającą pojedynczą liczbę (obliczoną sumę) bądź komunikat o błędzie.
+
+Ogólna definicja linii jest zapożyczona z innych protokołów tekstowych: ciąg drukowalnych znaków ASCII (być może pusty) zakończony dwuznakiem \r\n.
+
+Linia z liczbami zawierać może tylko cyfry i spacje. Ciągi cyfr należy interpretować jako liczby dziesiętne. Spacje służą jako separatory liczb, każda spacja musi znajdować się pomiędzy dwiema cyframi. Linia nie może być pusta, musi zawierać przynajmniej jedną liczbę.
+
+Linia sygnalizująca niemożność poprawnego obliczenia sumy zawiera pięć liter składających się na słowo „ERROR” (po tych literach oczywiście jest jeszcze terminator linii, czyli \r\n).
+
+Serwer może, ale nie musi, zamykać połączenie w reakcji na nienaturalne zachowanie klienta. Obejmuje to wysyłanie danych binarnych zamiast znaków ASCII, wysyłanie linii o długości przekraczającej przyjęty w kodzie źródłowym serwera limit, długi okres nieaktywności klienta, itd. Jeśli serwer narzuca maksymalną długość linii, to limit ten powinien wynosić co najmniej 1024 bajty (1022 drukowalne znaki i dwubajtowy terminator linii).
+
+Serwer nie powinien zamykać połączenia jeśli udało mu się odebrać poprawną linię w sensie ogólnej definicji, ale dane w niej zawarte są niepoprawne (np. oprócz cyfr i spacji są przecinki). Powinien wtedy zwracać komunikat o błędzie i przechodzić do przetwarzania następnej linii przesłanej przez klienta.
+
+Serwer powinien zwracać komunikat błędu również wtedy, gdy przesłane przez klienta liczby bądź ich suma przekraczają zakres typu całkowitoliczbowego wykorzystywanego przez serwer do prowadzenia obliczeń.
+
+Proszę zwrócić uwagę, że konsekwencją fragmentu „spacja musi znajdować się pomiędzy dwiema cyframi” jest to, że nie można mieć spacji na początku ani też na końcu linii, nie można też oddzielać liczb więcej niż jedną spacją.
+
+Napisz serwer TCP/IPv4 domyślnie nasłuchujący na porcie nr 2020 i implementujący powyższy protokół. Użytym językiem może być C/C++, Java lub Python, co kto lubi.
+
+To zadanie jest ważne. Na jego zrealizowanie macie Państwo dwa i pół tygodnia, rozwiązanie trzeba przesłać prowadzącemu najpóźniej w piątek 29 kwietnia.
+
+Zajęcia nr 7, 2022-04-13 i -14
+Nieobowiązkowe zajęcia konsultacyjne, zachęcam do pojawienia się i pokazania zalążków kodu serwera — usterki w kodzie tym łatwiej poprawić, im wcześniej zostaną zauważone.
