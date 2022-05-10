@@ -30,17 +30,21 @@ except HTTPError as err:
 
 # analizujemy zawartosc pobranej strony
 if(html_content.status_code == 200):
-    soup = BeautifulSoup(html_content.text, "lxml")
+    if "text/html" in html_content.headers["Content-type"]:
 
-    try:
-        price = soup.find(
-            "span", {"class": "bem-single-rate-box__item-rate"}).text
-    except AttributeError:
-        print("item not found")
-        exit(-1)
+        soup = BeautifulSoup(html_content.text, "lxml")
 
-    print("Aktualna cena za ktora mozna kupic dolara to")
-    print(price + "pln")
-    sys.exit(0)
+        try:
+            price = soup.find(
+                "span", {"class": "bem-single-rate-box__item-rate"}).text
+        except AttributeError:
+            print("item not found")
+            exit(-1)
+
+        print("Aktualna cena za ktora mozna kupic dolara to")
+        print(price + "pln")
+        sys.exit(0)
+    else: 
+        sys.exit(1)
 else:
     sys.exit(1)
