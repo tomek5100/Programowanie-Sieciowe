@@ -13,7 +13,7 @@ try:
     html_content = requests.get(url)
 except ConnectionError:
     print("no internet connection")
-    exit(-1)
+    sys.exit(1)
 except HTTPError as err:
     if err.code == 404:
         print("The requested resource could not be found but may be available in the future.")
@@ -25,7 +25,7 @@ except HTTPError as err:
         print("The server was acting as a gateway or proxy and received an invalid response from the upstream server.")
     else:
         print("error code: " + str(err.code))
-    exit(-1)
+    sys.exit(1)
 
 
 # analizujemy zawartosc pobranej strony
@@ -39,7 +39,7 @@ if(html_content.status_code == 200):
                 "span", {"class": "bem-single-rate-box__item-rate"}).text
         except AttributeError:
             print("item not found")
-            exit(-1)
+            sys.exit(1)
 
         print("Aktualna cena za ktora mozna kupic dolara to")
         print(price + "pln")
